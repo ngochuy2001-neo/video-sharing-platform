@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Search, MoreHorizontal, Eye, Edit, Trash2, CheckCircle, XCircle } from "lucide-react"
 import Image from "next/image"
+import api from "@/utils/axios"
 
 // Định nghĩa interface Video đúng với backend
 interface Video {
@@ -64,6 +65,7 @@ const mockVideos: Video[] = [
 export function VideoManagement() {
   const [searchQuery, setSearchQuery] = useState("")
   const [videos, setVideos] = useState<Video[]>(mockVideos)
+  const [loading, setLoading] = useState(false)
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -84,12 +86,34 @@ export function VideoManagement() {
     }
   }
 
-  const handleStatusChange = (videoId: number, newStatus: string) => {
-    setVideos(videos.map((video) => (video.id === videoId ? { ...video, status: newStatus } : video)))
+  // Hàm xóa video qua API
+  const handleDelete = async (videoId: number) => {
+    if (!window.confirm("Bạn có chắc muốn xóa video này?")) return;
+    setLoading(true)
+    try {
+      await api.delete(`/api/media/videos/${videoId}/`)
+      setVideos(videos.filter((video) => video.id !== videoId))
+    } catch (err) {
+      alert("Lỗi khi xóa video!")
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleDelete = (videoId: number) => {
-    setVideos(videos.filter((video) => video.id !== videoId))
+  // Hàm cập nhật (sửa) video qua API (ví dụ cập nhật status)
+  const handleStatusChange = async (videoId: number, newStatus: string) => {
+    setLoading(true)
+    try {
+      // Giả sử backend có trường status, nếu chưa có thì cần bổ sung ở backend
+      const res = await api.patch(`/api/media/videos/${videoId}/`, { status: newStatus })
+      setVideos(videos.map((video) => (video.id === videoId ? { ...video, status: newStatus } : video)))
+    } catch (err) {
+      alert("Lỗi khi cập nhật trạng thái video!")
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const filteredVideos = videos.filter(
