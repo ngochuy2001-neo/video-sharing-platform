@@ -10,7 +10,7 @@ import io
 class VideoViewSet(viewsets.ModelViewSet):
     queryset = Video.objects.all().order_by('-created_at')
     serializer_class = VideoSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         video = serializer.save()

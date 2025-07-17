@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -64,8 +64,21 @@ const mockVideos: Video[] = [
 
 export function VideoManagement() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [videos, setVideos] = useState<Video[]>(mockVideos)
+  const [videos, setVideos] = useState<Video[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  // Fetch danh sách video từ API khi mount
+  useEffect(() => {
+    setLoading(true)
+    api.get("/api/media/videos/")
+      .then(res => setVideos(res.data))
+      .catch(err => {
+        setError("Lỗi khi tải danh sách video!")
+        console.error(err)
+      })
+      .finally(() => setLoading(false))
+  }, [])
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -145,73 +158,79 @@ export function VideoManagement() {
             </div>
           </div>
 
-          <div className="bg-background rounded-lg border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Video</TableHead>
-                  <TableHead>Tác giả</TableHead>
-                  <TableHead>Ngày tải</TableHead>
-                  <TableHead>Lượt xem</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead className="text-right">Hành động</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredVideos.map((video) => (
-                  <TableRow key={video.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <Image
-                            src={video.thumbnail || "/placeholder.svg"}
-                            alt={video.title}
-                            width={100}
-                            height={60}
-                            className="w-20 h-12 object-cover rounded"
-                          />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="font-medium text-sm line-clamp-2 mb-1">{video.title}</h3>
-                          <p className="text-xs text-muted-foreground">{video.category?.name || "Không có danh mục"}</p>
-                          <p className="text-xs text-muted-foreground">Từ khóa: {video.keywords.map(k => k.name).join(", ")}</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-medium">{video.user}</TableCell>
-                    <TableCell>{new Date(video.created_at).toLocaleDateString("vi-VN")}</TableCell>
-                    <TableCell>-</TableCell>
-                    <TableCell>-</TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Eye className="mr-2 h-4 w-4" />
-                            Xem chi tiết
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Chỉnh sửa
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDelete(video.id)} className="text-destructive">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Xóa
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+          {loading ? (
+            <div className="text-center py-8">Đang tải video...</div>
+          ) : error ? (
+            <div className="text-center py-8 text-destructive">{error}</div>
+          ) : (
+            <div className="bg-background rounded-lg border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Video</TableHead>
+                    <TableHead>Tác giả</TableHead>
+                    <TableHead>Ngày tải</TableHead>
+                    <TableHead>Lượt xem</TableHead>
+                    <TableHead>Trạng thái</TableHead>
+                    <TableHead className="text-right">Hành động</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {filteredVideos.map((video) => (
+                    <TableRow key={video.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <Image
+                              src={video.thumbnail || "/placeholder.svg"}
+                              alt={video.title}
+                              width={100}
+                              height={60}
+                              className="w-20 h-12 object-cover rounded"
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-medium text-sm line-clamp-2 mb-1">{video.title}</h3>
+                            <p className="text-xs text-muted-foreground">{video.category?.name || "Không có danh mục"}</p>
+                            <p className="text-xs text-muted-foreground">Từ khóa: {video.keywords.map(k => k.name).join(", ")}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium">{video.user}</TableCell>
+                      <TableCell>{new Date(video.created_at).toLocaleDateString("vi-VN")}</TableCell>
+                      <TableCell>-</TableCell>
+                      <TableCell>-</TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>
+                              <Eye className="mr-2 h-4 w-4" />
+                              Xem chi tiết
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Chỉnh sửa
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDelete(video.id)} className="text-destructive">
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Xóa
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
 
-          {filteredVideos.length === 0 && (
+          {!loading && !error && filteredVideos.length === 0 && (
             <div className="text-center py-8">
               <p className="text-muted-foreground">Không tìm thấy video nào</p>
             </div>
