@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://http://192.168.10.83/",
+  baseURL: "http://192.168.10.83/",
   // withCredentials: true, // nếu cần gửi cookie
 });
 
