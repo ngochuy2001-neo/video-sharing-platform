@@ -10,56 +10,60 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Search, MoreHorizontal, Eye, Edit, Trash2, CheckCircle, XCircle } from "lucide-react"
 import Image from "next/image"
 
-const mockVideos = [
+// Định nghĩa interface Video đúng với backend
+interface Video {
+  id: number;
+  title: string;
+  description: string;
+  file: string;
+  thumbnail: string | null;
+  created_at: string;
+  updated_at: string;
+  user: string;
+  category: { id: number; name: string; description?: string } | null;
+  keywords: { id: number; name: string }[];
+  // status?: string; // Nếu muốn quản lý trạng thái
+}
+
+// Mock data đúng schema backend
+const mockVideos: Video[] = [
   {
-    id: "1",
-    title: "Hướng dẫn lập trình React từ cơ bản đến nâng cao",
-    thumbnail: "/placeholder.svg?height=60&width=100",
-    author: "Tech Academy",
-    uploadDate: "2024-12-15",
-    views: "125K",
-    duration: "15:30",
-    status: "active",
-    category: "Công nghệ",
+    id: 1,
+    title: "Video hướng dẫn React",
+    description: "Học React cơ bản cho người mới bắt đầu.",
+    file: "/videos/video1.mp4",
+    thumbnail: "/placeholder.jpg",
+    created_at: "2024-06-01T10:00:00Z",
+    updated_at: "2024-06-01T10:00:00Z",
+    user: "admin",
+    category: { id: 1, name: "Lập trình" },
+    keywords: [
+      { id: 1, name: "react" },
+      { id: 2, name: "frontend" },
+    ],
+    // status: "active",
   },
   {
-    id: "2",
-    title: "Top 10 địa điểm du lịch đẹp nhất Việt Nam 2024",
-    thumbnail: "/placeholder.svg?height=60&width=100",
-    author: "Travel Vietnam",
-    uploadDate: "2024-12-10",
-    views: "89K",
-    duration: "12:45",
-    status: "pending",
-    category: "Du lịch",
-  },
-  {
-    id: "3",
-    title: "Cách nấu phở bò chuẩn vị Hà Nội",
-    thumbnail: "/placeholder.svg?height=60&width=100",
-    author: "Món Ngon Mỗi Ngày",
-    uploadDate: "2024-12-12",
-    views: "234K",
-    duration: "8:20",
-    status: "active",
-    category: "Ẩm thực",
-  },
-  {
-    id: "4",
-    title: "Review iPhone 15 Pro Max - Có đáng để nâng cấp?",
-    thumbnail: "/placeholder.svg?height=60&width=100",
-    author: "Tech Review VN",
-    uploadDate: "2024-12-08",
-    views: "456K",
-    duration: "18:15",
-    status: "reported",
-    category: "Công nghệ",
+    id: 2,
+    title: "Giới thiệu về Python",
+    description: "Video nhập môn Python.",
+    file: "/videos/video2.mp4",
+    thumbnail: null,
+    created_at: "2024-06-02T12:30:00Z",
+    updated_at: "2024-06-02T12:30:00Z",
+    user: "user1",
+    category: { id: 2, name: "Khoa học dữ liệu" },
+    keywords: [
+      { id: 3, name: "python" },
+      { id: 4, name: "data" },
+    ],
+    // status: "pending",
   },
 ]
 
 export function VideoManagement() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [videos, setVideos] = useState(mockVideos)
+  const [videos, setVideos] = useState<Video[]>(mockVideos)
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -80,18 +84,18 @@ export function VideoManagement() {
     }
   }
 
-  const handleStatusChange = (videoId: string, newStatus: string) => {
+  const handleStatusChange = (videoId: number, newStatus: string) => {
     setVideos(videos.map((video) => (video.id === videoId ? { ...video, status: newStatus } : video)))
   }
 
-  const handleDelete = (videoId: string) => {
+  const handleDelete = (videoId: number) => {
     setVideos(videos.filter((video) => video.id !== videoId))
   }
 
   const filteredVideos = videos.filter(
     (video) =>
       video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      video.author.toLowerCase().includes(searchQuery.toLowerCase()),
+      video.user.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (
@@ -142,20 +146,18 @@ export function VideoManagement() {
                             height={60}
                             className="w-20 h-12 object-cover rounded"
                           />
-                          <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 py-0.5 rounded">
-                            {video.duration}
-                          </div>
                         </div>
                         <div className="min-w-0 flex-1">
                           <h3 className="font-medium text-sm line-clamp-2 mb-1">{video.title}</h3>
-                          <p className="text-xs text-muted-foreground">{video.category}</p>
+                          <p className="text-xs text-muted-foreground">{video.category?.name || "Không có danh mục"}</p>
+                          <p className="text-xs text-muted-foreground">Từ khóa: {video.keywords.map(k => k.name).join(", ")}</p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="font-medium">{video.author}</TableCell>
-                    <TableCell>{new Date(video.uploadDate).toLocaleDateString("vi-VN")}</TableCell>
-                    <TableCell>{video.views}</TableCell>
-                    <TableCell>{getStatusBadge(video.status)}</TableCell>
+                    <TableCell className="font-medium">{video.user}</TableCell>
+                    <TableCell>{new Date(video.created_at).toLocaleDateString("vi-VN")}</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>-</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -172,30 +174,6 @@ export function VideoManagement() {
                             <Edit className="mr-2 h-4 w-4" />
                             Chỉnh sửa
                           </DropdownMenuItem>
-                          {video.status === "pending" && (
-                            <>
-                              <DropdownMenuItem onClick={() => handleStatusChange(video.id, "active")}>
-                                <CheckCircle className="mr-2 h-4 w-4" />
-                                Phê duyệt
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleStatusChange(video.id, "blocked")}>
-                                <XCircle className="mr-2 h-4 w-4" />
-                                Từ chối
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          {video.status === "reported" && (
-                            <>
-                              <DropdownMenuItem onClick={() => handleStatusChange(video.id, "active")}>
-                                <CheckCircle className="mr-2 h-4 w-4" />
-                                Bỏ qua báo cáo
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleStatusChange(video.id, "blocked")}>
-                                <XCircle className="mr-2 h-4 w-4" />
-                                Chặn video
-                              </DropdownMenuItem>
-                            </>
-                          )}
                           <DropdownMenuItem onClick={() => handleDelete(video.id)} className="text-destructive">
                             <Trash2 className="mr-2 h-4 w-4" />
                             Xóa
