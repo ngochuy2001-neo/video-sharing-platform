@@ -59,7 +59,7 @@ export function CategoryManagement() {
   const fetchCategories = async () => {
     try {
       const res = await axios.get(
-        "http://http://192.168.10.83//api/media/categories/"
+        "http://192.168.10.83/api/media/categories/"
       );
       setCategories(res.data);
     } catch (err) {
@@ -71,7 +71,7 @@ export function CategoryManagement() {
     const token = localStorage.getItem("accessToken");
     try {
       const res = await axios.post(
-        "http://http://192.168.10.83//api/media/categories/",
+        "http://192.168.10.83/api/media/categories/",
         newCategory,
         {
           headers: {
@@ -90,7 +90,7 @@ export function CategoryManagement() {
   const handleDelete = async (id: number) => {
     const token = localStorage.getItem("accessToken");
     try {
-      await axios.delete(`http://http://192.168.10.83//api/media/categories/${id}/`, {
+      await axios.delete(`http://192.168.10.83/api/media/categories/${id}/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
