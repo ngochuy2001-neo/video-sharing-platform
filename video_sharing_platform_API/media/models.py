@@ -21,7 +21,7 @@ class Video(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
 
-    file = models.FileField(upload_to='videos/')  # lưu file lên thư mục MEDIA_ROOT/videos/
+    file = models.FileField(upload_to='')  # lưu file lên thư mục MEDIA_ROOT/videos/
     thumbnail = models.ImageField(upload_to='thumbnails/', blank=True, null=True)
 
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='videos')
