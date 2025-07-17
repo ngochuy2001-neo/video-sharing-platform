@@ -50,7 +50,7 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8000/api/users/login/", {
+      const res = await fetch("http://http://192.168.10.83//api/users/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

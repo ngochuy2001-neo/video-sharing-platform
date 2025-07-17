@@ -73,7 +73,7 @@ export function RegisterForm() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8000/api/users/register/", {
+      const res = await fetch("http://http://192.168.10.83//api/users/register/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
