@@ -64,6 +64,9 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+MEDIA_URL = '/media/videos/'
+MEDIA_ROOT = '/srv/media/videos/'
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
