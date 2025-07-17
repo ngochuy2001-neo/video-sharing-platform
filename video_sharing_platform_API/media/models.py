@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.conf import settings
+import os
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -32,6 +33,25 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
+
+    def delete(self, *args, **kwargs):
+        # Xóa file video vật lý nếu tồn tại
+        if self.file and self.file.name:
+            try:
+                file_path = self.file.storage.path(self.file.name)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            except Exception as e:
+                print(f"Lỗi xóa file video: {e}")
+        # Xóa file thumbnail vật lý nếu tồn tại
+        if self.thumbnail and self.thumbnail.name:
+            try:
+                thumb_path = self.thumbnail.storage.path(self.thumbnail.name)
+                if os.path.isfile(thumb_path):
+                    os.remove(thumb_path)
+            except Exception as e:
+                print(f"Lỗi xóa thumbnail: {e}")
+        super().delete(*args, **kwargs)
 
 class VideoKeyword(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
