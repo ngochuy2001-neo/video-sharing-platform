@@ -1,4 +1,4 @@
-import { VideoUpload } from "@/components/video-upload"
+import { VideoUpload } from "@/components/video-upload";
 
 export default function UploadPage() {
   return (
@@ -6,5 +6,5 @@ export default function UploadPage() {
       <h1 className="text-3xl font-bold mb-8">Tải lên video</h1>
       <VideoUpload />
     </div>
-  )
+  );
 }

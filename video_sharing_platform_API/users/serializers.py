@@ -15,6 +15,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Mật khẩu không khớp."})
+        if User.objects.filter(email=attrs['email']).exists():
+            raise serializers.ValidationError({"email": "Email đã tồn tại."})
         return attrs
 
     def create(self, validated_data):
@@ -22,23 +24,25 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
-
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        email = attrs.get("email")
-        password = attrs.get("password")
+        email = attrs.get('email')
+        password = attrs.get('password')
 
+        # Kiểm tra email tồn tại
         try:
-            user = User.objects.get(email=email)
+            user_obj = User.objects.get(email=email)
         except User.DoesNotExist:
-            raise serializers.ValidationError(_("Sai thông tin đăng nhập"))
+            raise serializers.ValidationError("Sai thông tin đăng nhập")
 
-        user = authenticate(username=user.username, password=password)
+        user = authenticate(username=user_obj.username, password=password)
         if not user:
-            raise serializers.ValidationError(_("Sai thông tin đăng nhập"))
+            raise serializers.ValidationError("Sai thông tin đăng nhập")
+        if not user.is_active:
+            raise serializers.ValidationError("Tài khoản đang bị vô hiệu hóa")
 
-        attrs["user"] = user
+        attrs['user'] = user
         return attrs

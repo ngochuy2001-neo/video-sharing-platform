@@ -1,12 +1,22 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { LayoutDashboard, Video, Users, BarChart3, Settings, Menu, Home, MessageSquare, Flag } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  LayoutDashboard,
+  Video,
+  Users,
+  BarChart3,
+  Settings,
+  Menu,
+  Home,
+  FolderOpen,
+  Tag,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const sidebarItems = [
   {
@@ -25,30 +35,30 @@ const sidebarItems = [
     icon: Users,
   },
   {
+    title: "Quản lý Category",
+    href: "/admin/categories",
+    icon: FolderOpen,
+  },
+  {
+    title: "Quản lý Keywords",
+    href: "/admin/keywords",
+    icon: Tag,
+  },
+  {
     title: "Thống kê",
     href: "/admin/analytics",
     icon: BarChart3,
-  },
-  {
-    title: "Bình luận",
-    href: "/admin/comments",
-    icon: MessageSquare,
-  },
-  {
-    title: "Báo cáo",
-    href: "/admin/reports",
-    icon: Flag,
   },
   {
     title: "Cài đặt",
     href: "/admin/settings",
     icon: Settings,
   },
-]
+];
 
 export function AdminSidebar() {
-  const pathname = usePathname()
-  const [open, setOpen] = useState(false)
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -70,8 +80,8 @@ export function AdminSidebar() {
         </Button>
 
         {sidebarItems.map((item) => {
-          const Icon = item.icon
-          const isActive = pathname === item.href
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
 
           return (
             <Button
@@ -85,11 +95,11 @@ export function AdminSidebar() {
                 {item.title}
               </Link>
             </Button>
-          )
+          );
         })}
       </nav>
     </div>
-  )
+  );
 
   return (
     <>
@@ -110,5 +120,5 @@ export function AdminSidebar() {
         </SheetContent>
       </Sheet>
     </>
-  )
+  );
 }

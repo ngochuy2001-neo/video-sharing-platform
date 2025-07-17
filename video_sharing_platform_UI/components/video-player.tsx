@@ -1,14 +1,15 @@
 "use client"
 
 interface VideoPlayerProps {
-  videoId: string
+  fileUrl: string;
+  posterUrl?: string;
 }
 
-export function VideoPlayer({ videoId }: VideoPlayerProps) {
+export function VideoPlayer({ fileUrl, posterUrl }: VideoPlayerProps) {
   return (
     <div className="aspect-video bg-black rounded-lg overflow-hidden">
-      <video controls className="w-full h-full" poster="/placeholder.svg?height=400&width=700">
-        <source src={`/api/video/${videoId}`} type="video/mp4" />
+      <video controls className="w-full h-full" poster={posterUrl || "/placeholder.svg?height=400&width=700"}>
+        <source src={fileUrl} type="video/mp4" />
         Trình duyệt của bạn không hỗ trợ video.
       </video>
     </div>
